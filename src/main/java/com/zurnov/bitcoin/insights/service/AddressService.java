@@ -6,4 +6,5 @@ import reactor.core.publisher.Mono;
 public interface AddressService {
 
     Mono<Address> getAddressInfo(String address);
+
 }
