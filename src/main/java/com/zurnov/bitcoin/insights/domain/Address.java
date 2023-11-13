@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigInteger;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,5 +41,8 @@ public class Address {
 
     @JsonProperty("final_n_tx")
     private BigInteger finalNumberOfTransactions;
+
+    @JsonProperty("txrefs")
+    private List<TransactionReference> transactionReferences;
 
 }
