@@ -7,6 +7,6 @@ RUN chmod 644 bitcoin.insights-0.0.1-SNAPSHOT.jar
 
 ENV API_TOKEN=$API_TOKEN
 
-EXPOSE 8080
+EXPOSE 8000
 
 CMD ["java", "-jar", "bitcoin.insights-0.0.1-SNAPSHOT.jar"]
