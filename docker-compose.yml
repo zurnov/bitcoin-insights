@@ -3,6 +3,6 @@ services:
   frontend:
     image: ghcr.io/zurnov/java-app-bitcoin:latest
     ports:
-     - "3000:8080"
+     - "8080:8080"
 
 
