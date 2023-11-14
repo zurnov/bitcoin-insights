@@ -24,9 +24,9 @@ public class AddressController {
         return addressService.getAddressInfo(address);
     }
 
-    @GetMapping(path = "/hello")
-    public String getHello() {
+    @GetMapping(path = "/hello/{name}")
+    public String getHello(@PathVariable String name) {
 
-        return "Hello!";
+        return String.format("Hello %s!", name);
     }
 }
