@@ -20,6 +20,10 @@ jobs:
       - name: Login
         run: |
           echo ${{ secrets.PAT }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Build with jar
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
       - name: Build and Publish
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
