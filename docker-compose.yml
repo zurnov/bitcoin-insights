@@ -1,8 +1,21 @@
 version: '3'
 services:
-  frontend:
+
+  bitcoin:
     image: ghcr.io/zurnov/java-app-bitcoin:latest
     ports:
      - "8000:8000"
+    depends_on:
+      - database
 
-
+  database:
+    image: postgres:16.1
+    restart: always
+    environment:
+      POSTGRES_DB: bitcoin_insights_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
