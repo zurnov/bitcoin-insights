@@ -7,6 +7,11 @@ services:
      - "8000:8000"
     depends_on:
       - database
+    environment:
+      API_TOKEN: ${API_TOKEN}
+      RPC_USER: ${RPC_USER}
+      RPC_PASSWORD: ${RPC_PASSWORD}
+      RPC_ADDRESS: ${RPC_ADDRESS}
 
   database:
     image: postgres:16.1
