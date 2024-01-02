@@ -5,8 +5,8 @@ services:
     restart: always
     environment:
       POSTGRES_DB: bitcoin_insights_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
