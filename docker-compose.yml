@@ -1,6 +1,5 @@
 version: '3'
 services:
-
   database:
     image: postgres:16.1
     restart: always
@@ -12,11 +11,13 @@ services:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
+    networks:
+      - bitcoin-insights-network
 
   java-api:
     image: ghcr.io/zurnov/java-app-bitcoin:latest
     ports:
-     - "8000:8000"
+      - "8000:8000"
     depends_on:
       - database
     environment:
@@ -24,6 +25,12 @@ services:
       - RPC_USER=${RPC_USER}
       - RPC_PASSWORD=${RPC_PASSWORD}
       - RPC_ADDRESS=${RPC_ADDRESS}
+    networks:
+      - bitcoin-insights-network
 
 volumes:
   data:
+
+networks:
+  bitcoin-insights-network:
+    driver: bridge
