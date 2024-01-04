@@ -4,9 +4,9 @@ services:
     image: postgres:16.1
     restart: always
     environment:
-      POSTGRES_DB: bitcoin_insights_db
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      - POSTGRES_DB=bitcoin_insights_db
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
