@@ -2,6 +2,7 @@ package com.zurnov.bitcoin.insights.ui;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -13,6 +14,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouterLink;
 import com.zurnov.bitcoin.insights.dto.UserDTO;
 import com.zurnov.bitcoin.insights.service.UserService;
 
@@ -29,13 +31,29 @@ public class UserView extends VerticalLayout {
     public UserView(UserService userService) {
         this.userService = userService;
 
+        HorizontalLayout navBar = new HorizontalLayout();
+        navBar.add(
+                new RouterLink("Home", HomeView.class),
+                new RouterLink("User", UserView.class)
+        );
+
         Button createButton = new Button("Create", event -> openCreateDialog());
+        createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
         Button deleteButton = new Button("Delete", event -> openDeleteDialog());
+        deleteButton.addClassName("delete-button");
+        deleteButton.getElement().getStyle().set("background-color", "#d9534f");
+        deleteButton.getElement().getStyle().set("color", "#fff");
+
         Button refreshButton = new Button("Refresh", event -> refreshUsers());
+        refreshButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+
 
         userGrid.setColumns("userId","username", "email", "dateOfBirth", "registrationDate");
+        HorizontalLayout actionButtons = new HorizontalLayout();
+        actionButtons.add(createButton, deleteButton, refreshButton);
 
-        add(createButton, deleteButton, userGrid, refreshButton);
+        add(navBar, userGrid, actionButtons);
 
         refreshUsers();
     }
