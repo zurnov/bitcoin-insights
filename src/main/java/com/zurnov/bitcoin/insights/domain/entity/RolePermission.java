@@ -1,5 +1,6 @@
 package com.zurnov.bitcoin.insights.domain.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,19 +11,21 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "portfolios")
+@Table(name = "role_permission")
 @Data
-public class Portfolio {
+public class RolePermission {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long portfolioId;
+    @Column(name = "role_permission_id")
+    private Long rolePermissionId;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "role_id")
+    private Role role;
 
-    private String portfolioName;
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "permission_id")
+    private Permission permission;
 
 }
