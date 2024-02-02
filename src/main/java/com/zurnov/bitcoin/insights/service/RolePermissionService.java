@@ -50,7 +50,7 @@ public class RolePermissionService {
             throw new ValidationException("Role and Permission are required.");
         }
 
-        if (rolePermissionRepository.existsByRo leIdAndPermissionId(
+        if (rolePermissionRepository.existsByRoleIdAndPermissionId(
                 rolePermissionDTO.getRoleId(), rolePermissionDTO.getPermissionId())) {
             throw new ValidationException("RolePermission already exists for the specified Role and Permission.");
         }
