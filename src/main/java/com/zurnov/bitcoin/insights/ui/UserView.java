@@ -34,7 +34,8 @@ public class UserView extends VerticalLayout {
         HorizontalLayout navBar = new HorizontalLayout();
         navBar.add(
                 new RouterLink("Home", HomeView.class),
-                new RouterLink("User", UserView.class)
+                new RouterLink("User", UserView.class),
+                new RouterLink("Roles", RoleView.class)
         );
 
         Button createButton = new Button("Create", event -> openCreateDialog());

@@ -55,12 +55,17 @@ public class UserRoleService {
         userRoleRepository.deleteById(userRoleId);
     }
 
-    private void validateUserRole(UserRoleDTO userRoleDTO) {
+    public boolean validateUserRole(UserRoleDTO userRoleDTO) {
 
         if (userRoleDTO.getUserId() == null || userRoleDTO.getRoleId() == null) {
             throw new ValidationException("User ID and Role ID are required.");
         }
 
+        if (userRoleRepository.existsByUserIdAndRoleID(userRoleDTO.getRoleId(), userRoleDTO.getUserId())) {
+            throw new ValidationException("Such UserRole already exists.");
+        }
+
+        return true;
     }
 
 }

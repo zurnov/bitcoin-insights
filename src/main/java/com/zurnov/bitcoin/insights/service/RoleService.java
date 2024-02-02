@@ -54,7 +54,7 @@ public class RoleService {
         roleRepository.deleteById(roleId);
     }
 
-    private void validateRole(RoleDTO roleDTO) {
+    public boolean validateRole(RoleDTO roleDTO) {
         if (roleDTO.getRoleName() == null || roleDTO.getRoleName().isEmpty()) {
             throw new ValidationException("Role name is required.");
         }
@@ -67,6 +67,7 @@ public class RoleService {
             throw new ValidationException("Such role already exists " + roleDTO.getRoleName());
         }
 
+        return true;
     }
 
 }
