@@ -1,13 +1,12 @@
 package com.zurnov.bitcoin.insights.ui;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
-import com.vaadin.flow.server.InputStreamFactory;
 import com.vaadin.flow.server.StreamResource;
 
 @Route("about/db")
@@ -32,6 +31,18 @@ public class AboutDatabaseView extends VerticalLayout {
 
         Button redirectButton = new Button("Go to GitHub Repository", event ->
                 getUI().ifPresent(ui -> ui.getPage().executeJs("window.open('https://github.com/zurnov/bitcoin-insights','_blank');")));
+
+
+        Button rickrollButton = new Button("Drop database");
+
+        rickrollButton.addClickListener(event -> {
+
+            Notification.show("Surprise!");
+
+            getUI().ifPresent(ui -> ui.getPage().executeJs("window.open('https://rickroll.it/rickroll.mp4','_blank');"));
+        });
+
+        add(rickrollButton);
 
         add(image);
         add(redirectButton);
