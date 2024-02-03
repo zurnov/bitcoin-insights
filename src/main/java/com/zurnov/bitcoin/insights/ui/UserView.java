@@ -35,7 +35,8 @@ public class UserView extends VerticalLayout {
         navBar.add(
                 new RouterLink("Home", HomeView.class),
                 new RouterLink("User", UserView.class),
-                new RouterLink("Roles", RoleView.class)
+                new RouterLink("Roles", RoleView.class),
+                new RouterLink("About Database", AboutDatabaseView.class)
         );
 
         Button createButton = new Button("Create", event -> openCreateDialog());
