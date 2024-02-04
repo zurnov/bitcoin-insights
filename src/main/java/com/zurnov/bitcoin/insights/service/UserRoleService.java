@@ -2,6 +2,7 @@ package com.zurnov.bitcoin.insights.service;
 
 import com.zurnov.bitcoin.insights.domain.entity.UserRole;
 import com.zurnov.bitcoin.insights.dto.UserRoleDTO;
+import com.zurnov.bitcoin.insights.dto.UserRoleDetailedDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
 import com.zurnov.bitcoin.insights.exception.ResourceNotFoundException;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,6 +53,10 @@ public class UserRoleService {
 
     public void deleteUserRole(Long userRoleId) {
         userRoleRepository.deleteById(userRoleId);
+    }
+
+    public List<UserRoleDetailedDTO> getUserDetailedRolesById(Long userId) {
+        return userRoleRepository.getUserRolesDetailed(userId);
     }
 
     public boolean validateUserRole(UserRoleDTO userRoleDTO) {

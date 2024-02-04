@@ -1,11 +1,13 @@
 package com.zurnov.bitcoin.insights.service;
 
 import com.zurnov.bitcoin.insights.domain.entity.Role;
+import com.zurnov.bitcoin.insights.domain.entity.UserRole;
 import com.zurnov.bitcoin.insights.dto.RoleDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
 import com.zurnov.bitcoin.insights.exception.ResourceNotFoundException;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
 import com.zurnov.bitcoin.insights.repository.RoleRepository;
+import com.zurnov.bitcoin.insights.repository.UserRoleRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,13 @@ import java.util.stream.Collectors;
 public class RoleService {
 
     private final RoleRepository roleRepository;
+    private final UserRoleRepository userRoleRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public RoleService(RoleRepository roleRepository, ModelMapper modelMapper) {
+    public RoleService(RoleRepository roleRepository, UserRoleRepository userRoleRepository, ModelMapper modelMapper) {
         this.roleRepository = roleRepository;
+        this.userRoleRepository = userRoleRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -51,6 +55,14 @@ public class RoleService {
     }
 
     public void deleteRole(Long roleId) {
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Role not found with ID: " + roleId));
+
+        // Fetch and delete associated user roles
+        List<UserRole> userRoles = userRoleRepository.findByRole(role);
+        userRoleRepository.deleteAll(userRoles);
+
+        // Delete the role
         roleRepository.deleteById(roleId);
     }
 

@@ -36,6 +36,18 @@ public class UserService {
         return modelMapper.map(user, UserDTO.class);
     }
 
+    public List<UserDTO> getUsersByUsername(String username) {
+        List<User> users = userRepository.findAllByUsernameContaining(username);
+        return users.stream()
+                .map(user -> modelMapper.map(user, UserDTO.class)).toList();
+    }
+
+    public List<UserDTO> getUsersByIdAndUsername(Long userId, String username) {
+        List<User> users = userRepository.findAllByUserIdAndUsernameContaining(userId, username);
+        return users.stream()
+                .map(user -> modelMapper.map(user, UserDTO.class)).toList();
+    }
+
     public UserDTO createUser(UserDTO userDTO) {
 
         // TODO Create a separate validation class PreProcessor

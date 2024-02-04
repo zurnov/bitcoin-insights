@@ -15,9 +15,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.zurnov.bitcoin.insights.dto.RoleDTO;
 import com.zurnov.bitcoin.insights.dto.UserRoleDTO;
+import com.zurnov.bitcoin.insights.dto.UserRoleDetailedDTO;
 import com.zurnov.bitcoin.insights.service.RoleService;
 import com.zurnov.bitcoin.insights.service.UserRoleService;
 
+import java.util.Collections;
 import java.util.List;
 
 @Route("roles")
@@ -28,6 +30,8 @@ public class RoleView extends VerticalLayout {
 
     private Grid<RoleDTO> roleGrid = new Grid<>(RoleDTO.class);
     private Grid<UserRoleDTO> userRoleGrid = new Grid<>(UserRoleDTO.class);
+    private Grid<UserRoleDetailedDTO> detailedRoleGrid = new Grid<>(UserRoleDetailedDTO.class);
+
 
     public RoleView(RoleService roleService, UserRoleService userRoleService) {
         this.roleService = roleService;
@@ -63,7 +67,17 @@ public class RoleView extends VerticalLayout {
         VerticalLayout userRoleLayout = new VerticalLayout();
         userRoleLayout.add(new Text("User Roles"), userRoleGrid, createUserRoleButton, deleteUserRoleButton);
 
-        add(navBar, roleLayout, userRoleLayout);
+        detailedRoleGrid.setColumns("userId", "username", "roleName", "description");
+
+        roleGrid.asSingleSelect().addValueChangeListener(event -> {
+            RoleDTO selectedRole = event.getValue();
+            if (selectedRole != null) {
+
+                updateDetailedRoleGrid(selectedRole.getRoleId());
+            }
+        });
+
+        add(navBar, detailedRoleGrid, roleLayout, userRoleLayout);
 
         refreshRoles();
         refreshUserRoles();
@@ -173,6 +187,7 @@ public class RoleView extends VerticalLayout {
         Button deleteButton = new Button("Delete", event -> {
             roleService.deleteRole(roleToDelete.getRoleId());
             refreshRoles();
+            refreshUserRoles();
             confirmationDialog.close();
         });
 
@@ -209,7 +224,7 @@ public class RoleView extends VerticalLayout {
             UserRoleDTO userRoleDTO = new UserRoleDTO();
             userRoleDTO.setRoleId(roleIdValue);
             userRoleDTO.setUserId(userIdValue);
-            if (userRoleService.validateUserRole(userRoleDTO)) {
+            if (!userRoleService.validateUserRole(userRoleDTO)) {
                 notification.setText("User Role already exists");
                 notification.open();
             } else {
@@ -293,4 +308,10 @@ public class RoleView extends VerticalLayout {
         confirmationDialog.add(confirmationLayout);
         confirmationDialog.open();
     }
+
+    private void updateDetailedRoleGrid(Long roleId) {
+        List<UserRoleDetailedDTO> roleUsers = userRoleService.getUserDetailedRolesById(roleId);
+        detailedRoleGrid.setItems(roleUsers);
+    }
+
 }
