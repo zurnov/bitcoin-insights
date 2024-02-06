@@ -1,5 +1,6 @@
 package com.zurnov.bitcoin.insights.service;
 
+import com.zurnov.bitcoin.insights.dto.UserRoleDTO;
 import com.zurnov.bitcoin.insights.repository.UserRepository;
 import com.zurnov.bitcoin.insights.domain.entity.User;
 import com.zurnov.bitcoin.insights.dto.UserDTO;
@@ -16,11 +17,14 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository userRepository;
+
+    private final UserRoleService userRoleService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, ModelMapper modelMapper) {
+    public UserService(UserRepository userRepository, UserRoleService userRoleService, ModelMapper modelMapper) {
         this.userRepository = userRepository;
+        this.userRoleService = userRoleService;
         this.modelMapper = modelMapper;
     }
 
@@ -58,6 +62,12 @@ public class UserService {
         try {
             User user = modelMapper.map(userDTO, User.class);
             User savedUser = userRepository.save(user);
+            UserRoleDTO userRoleDTO = new UserRoleDTO();
+            userRoleDTO.setUserId(savedUser.getUserId());
+            //Setting default role View
+            userRoleDTO.setRoleId(2L);
+            userRoleService.createUserRole(userRoleDTO);
+
             return modelMapper.map(savedUser, UserDTO.class);
         } catch (Exception e) {
             throw new OperationFailedException("Failed to create user: " + e.getMessage());
