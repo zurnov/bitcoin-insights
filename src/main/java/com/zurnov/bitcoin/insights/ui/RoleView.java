@@ -13,6 +13,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.zurnov.bitcoin.insights.domain.entity.UserRoleDetailed;
 import com.zurnov.bitcoin.insights.dto.RoleDTO;
 import com.zurnov.bitcoin.insights.dto.UserRoleDTO;
 import com.zurnov.bitcoin.insights.dto.UserRoleDetailedDTO;
@@ -42,8 +43,10 @@ public class RoleView extends VerticalLayout {
                 new RouterLink("Home", HomeView.class),
                 new RouterLink("User", UserView.class),
                 new RouterLink("Roles", RoleView.class),
-                new RouterLink("About Database", AboutDatabaseView.class)
+                new RouterLink("About Database", AboutDatabaseView.class),
+                new RouterLink("Permissions", PermissionView.class)
         );
+
 
         Button createRoleButton = new Button("Create Role", event -> openCreateRoleDialog());
         createRoleButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);

@@ -20,7 +20,8 @@ public class AboutDatabaseView extends VerticalLayout {
                 new RouterLink("Home", HomeView.class),
                 new RouterLink("User", UserView.class),
                 new RouterLink("Roles", RoleView.class),
-                new RouterLink("About Database", AboutDatabaseView.class)
+                new RouterLink("About Database", AboutDatabaseView.class),
+                new RouterLink("Permissions", PermissionView.class)
         );
         add(navBar);
         StreamResource imageResource = new StreamResource("db_scheme.png",

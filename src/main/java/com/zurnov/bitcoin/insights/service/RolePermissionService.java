@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RolePermissionService {
@@ -43,6 +44,13 @@ public class RolePermissionService {
         RolePermission rolePermission = rolePermissionRepository.findById(rolePermissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("RolePermission not found with ID: " + rolePermissionId));
         return modelMapper.map(rolePermission, RolePermissionDTO.class);
+    }
+
+    public List<RolePermissionDTO> getRolePermissionsByRoleId(Long roleId) {
+        List<RolePermission> rolePermissions = rolePermissionRepository.findRolePermissionByRoleRoleId(roleId);
+        return rolePermissions.stream()
+                .map(rolePermission -> modelMapper.map(rolePermission, RolePermissionDTO.class))
+                .collect(Collectors.toList());
     }
 
     public RolePermissionDTO createRolePermission(RolePermissionDTO rolePermissionDTO) {

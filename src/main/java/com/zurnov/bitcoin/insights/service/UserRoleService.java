@@ -1,6 +1,7 @@
 package com.zurnov.bitcoin.insights.service;
 
 import com.zurnov.bitcoin.insights.domain.entity.UserRole;
+import com.zurnov.bitcoin.insights.domain.entity.UserRoleDetailed;
 import com.zurnov.bitcoin.insights.dto.UserRoleDTO;
 import com.zurnov.bitcoin.insights.dto.UserRoleDetailedDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
@@ -56,7 +57,8 @@ public class UserRoleService {
     }
 
     public List<UserRoleDetailedDTO> getUserDetailedRolesById(Long userId) {
-        return userRoleRepository.getUserRolesDetailed(userId);
+        List<UserRoleDetailed> users =  userRoleRepository.getUserRolesDetailed(userId);
+        return users.stream().map(userRoleDetailed -> modelMapper.map(userRoleDetailed, UserRoleDetailedDTO.class)).collect(Collectors.toList());
     }
 
     public boolean validateUserRole(UserRoleDTO userRoleDTO) {
