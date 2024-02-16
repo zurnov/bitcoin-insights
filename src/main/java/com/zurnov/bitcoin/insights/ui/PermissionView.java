@@ -50,8 +50,10 @@ public class PermissionView extends VerticalLayout {
                 new RouterLink("User", UserView.class),
                 new RouterLink("Roles", RoleView.class),
                 new RouterLink("About Database", AboutDatabaseView.class),
-                new RouterLink("Permissions", PermissionView.class)
+                new RouterLink("Permissions", PermissionView.class),
+                new RouterLink("Address Info", AddressInfoView.class)
         );
+
         add(navBar);
 
         this.permissionService = permissionService;

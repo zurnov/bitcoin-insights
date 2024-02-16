@@ -44,8 +44,10 @@ public class RoleView extends VerticalLayout {
                 new RouterLink("User", UserView.class),
                 new RouterLink("Roles", RoleView.class),
                 new RouterLink("About Database", AboutDatabaseView.class),
-                new RouterLink("Permissions", PermissionView.class)
+                new RouterLink("Permissions", PermissionView.class),
+                new RouterLink("Address Info", AddressInfoView.class)
         );
+
 
 
         Button createRoleButton = new Button("Create Role", event -> openCreateRoleDialog());

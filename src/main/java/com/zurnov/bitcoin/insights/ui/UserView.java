@@ -41,8 +41,10 @@ public class UserView extends VerticalLayout {
                 new RouterLink("User", UserView.class),
                 new RouterLink("Roles", RoleView.class),
                 new RouterLink("About Database", AboutDatabaseView.class),
-                new RouterLink("Permissions", PermissionView.class)
+                new RouterLink("Permissions", PermissionView.class),
+                new RouterLink("Address Info", AddressInfoView.class)
         );
+
 
         Button createButton = new Button("Create", event -> openCreateDialog());
         createButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
