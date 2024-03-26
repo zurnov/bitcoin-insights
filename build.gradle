@@ -29,6 +29,7 @@ dependencies {
 	implementation 'org.postgresql:postgresql:42.7.1'
 	implementation 'org.bitcoinj:bitcoinj-core:0.16.2'
 	implementation 'commons-codec:commons-codec:1.16.1'
+	implementation 'org.json:json:20240303'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'

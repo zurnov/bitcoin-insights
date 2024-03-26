@@ -14,7 +14,7 @@ public class ApiError {
 
     private HttpStatus status;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "America/New_York")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "Europe/Sofia")
     private Date timestamp;
 
     private String message;

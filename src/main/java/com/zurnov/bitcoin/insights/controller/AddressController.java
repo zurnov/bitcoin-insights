@@ -3,9 +3,9 @@ package com.zurnov.bitcoin.insights.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zurnov.bitcoin.insights.domain.Address;
 import com.zurnov.bitcoin.insights.domain.JsonResponse;
+import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.service.AddressService;
-import com.zurnov.bitcoin.insights.service.NetworkClient;
-import com.zurnov.bitcoin.insights.util.AddressUtil;
+import com.zurnov.bitcoin.insights.service.NetworkClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,18 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 public class AddressController {
 
-    AddressService addressService;
-    NetworkClient rpcClient;
+    private final AddressService addressService;
+    private final NetworkClientService networkClientService;
+
+    private final ObjectMapper mapper;
 
     @Autowired
-    public AddressController(AddressService addressService, NetworkClient rpcClient) {
+    public AddressController(AddressService addressService, NetworkClientService networkClientService, ObjectMapper mapper) {
         this.addressService = addressService;
-        this.rpcClient = rpcClient;
+        this.networkClientService = networkClientService;
+        this.mapper = mapper;
     }
 
     @GetMapping(path = "/address/{address}")
@@ -37,9 +39,8 @@ public class AddressController {
 
     @GetMapping("/getblockchaininfo")
     public ResponseEntity<Object> getBlockchainInfo() {
-        String rpcResult = rpcClient.sendRPCCommand("getindexinfo", new ArrayList<>(), 8332);
+        String rpcResult = networkClientService.sendRPCCommand("getindexinfo", new ArrayList<>(), 8332);
         try {
-            ObjectMapper mapper = new ObjectMapper();
             JsonResponse jsonResponse = mapper.readValue(rpcResult, JsonResponse.class);
             return ResponseEntity.ok(jsonResponse);
         } catch (Exception e) {
@@ -49,16 +50,9 @@ public class AddressController {
     }
 
     @GetMapping("/getaddressbalance/{address}")
-    public ResponseEntity<Object> getAddressBalance(@PathVariable String address) {
-        String addressLookupScriptHash = AddressUtil.generateLookupScriptHash(address);
-        String rpcResult = rpcClient.sendRpcTCPRequest("blockchain.scripthash.get_balance", List.of(addressLookupScriptHash), 50001);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonResponse jsonResponse = mapper.readValue(rpcResult, JsonResponse.class);
-            return ResponseEntity.ok(jsonResponse);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
-        }
+    public ResponseEntity<AddressBalanceDTO> getAddressBalance(@PathVariable String address) {
+
+        AddressBalanceDTO rpcResult = addressService.getAddressBalance(address);
+        return new ResponseEntity<>(rpcResult,HttpStatus.OK);
     }
 }
