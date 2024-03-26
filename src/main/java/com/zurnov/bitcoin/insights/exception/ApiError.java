@@ -21,12 +21,12 @@ public class ApiError {
 
     private String description;
 
-    private String hpdc_request_id;
+    private String request_id;
 
     public ApiError(String code, HttpStatus status, String message, String description, String requestId) {
         this(code, status, message);
         this.description = description;
-        this.hpdc_request_id = requestId;
+        this.request_id = requestId;
     }
 
     public ApiError(String code, HttpStatus status, String message) {
