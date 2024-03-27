@@ -16,13 +16,11 @@ public class AddressServiceImpl implements AddressService {
 
     private static final String BITCOIN_ADDRESS_REGEX = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$";
 
-    private final WebClient localApiClient;
 
     private final NetworkClientService networkClientService;
 
     @Autowired
-    public AddressServiceImpl(WebClient localApiClient, NetworkClientService networkClientService) {
-        this.localApiClient = localApiClient;
+    public AddressServiceImpl(NetworkClientService networkClientService) {
         this.networkClientService = networkClientService;
     }
 
