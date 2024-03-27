@@ -1,16 +1,11 @@
 package com.zurnov.bitcoin.insights.service;
 
-import com.zurnov.bitcoin.insights.domain.Address;
 import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
 import com.zurnov.bitcoin.insights.util.AddressUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -22,25 +17,13 @@ public class AddressServiceImpl implements AddressService {
     private static final String BITCOIN_ADDRESS_REGEX = "^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$";
 
     private final WebClient localApiClient;
-    private final String secretToken;
 
     private final NetworkClientService networkClientService;
 
     @Autowired
-    public AddressServiceImpl(WebClient localApiClient, @Value("${secret.token}") String secretToken, NetworkClientService networkClientService) {
+    public AddressServiceImpl(WebClient localApiClient, NetworkClientService networkClientService) {
         this.localApiClient = localApiClient;
-        this.secretToken = secretToken;
         this.networkClientService = networkClientService;
-    }
-
-    @Override
-    public Mono<Address> getAddressInfo(String address) {
-
-        return localApiClient.get()
-                .uri("/addrs/{address}?token={token}", address, secretToken)
-                .accept(MediaType.APPLICATION_JSON)
-                .retrieve().onStatus(HttpStatusCode::is4xxClientError,
-                        error -> Mono.error(new Throwable("Bad Request"))).bodyToMono(Address.class);
     }
 
     public AddressBalanceDTO getAddressBalance(String address) {

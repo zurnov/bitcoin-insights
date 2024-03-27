@@ -1,7 +1,6 @@
 package com.zurnov.bitcoin.insights.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zurnov.bitcoin.insights.domain.Address;
 import com.zurnov.bitcoin.insights.domain.JsonResponse;
 import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.service.AddressService;
@@ -12,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 
@@ -29,12 +27,6 @@ public class AddressController {
         this.addressService = addressService;
         this.networkClientService = networkClientService;
         this.mapper = mapper;
-    }
-
-    @GetMapping(path = "/address/{address}")
-    public Mono<Address> getAddress(@PathVariable String address) {
-
-        return addressService.getAddressInfo(address);
     }
 
     @GetMapping("/getblockchaininfo")
