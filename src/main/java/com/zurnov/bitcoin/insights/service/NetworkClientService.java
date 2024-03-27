@@ -6,7 +6,6 @@ import com.zurnov.bitcoin.insights.domain.RPCRequest;
 import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +21,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class NetworkClientService {
@@ -41,7 +41,7 @@ public class NetworkClientService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         String jsonRpc = "2.0";
 
-        RPCRequest request = new RPCRequest(jsonRpc, "zurnov", method, params);
+        RPCRequest request = new RPCRequest(jsonRpc, UUID.randomUUID().toString(), method, params);
 
         HttpEntity<RPCRequest> entity = new HttpEntity<>(request, headers);
 
@@ -56,7 +56,7 @@ public class NetworkClientService {
 
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("id", "zurnov");
+            requestMap.put("id", UUID.randomUUID().toString());
             requestMap.put("method", method);
             requestMap.put("params", params);
 
