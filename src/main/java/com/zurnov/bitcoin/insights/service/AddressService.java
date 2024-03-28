@@ -7,6 +7,6 @@ public interface AddressService {
 
     AddressBalanceDTO getAddressBalance(String address);
 
-    AddressTransactionHistoryDTO getAddressHistory(String address, Integer pageNumber, Integer pageSize);
+    AddressTransactionHistoryDTO getAddressTransactionHistory(String address, Integer pageNumber, Integer pageSize);
 
 }

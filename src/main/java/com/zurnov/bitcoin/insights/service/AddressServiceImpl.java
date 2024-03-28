@@ -49,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
 
     }
 
-    public AddressTransactionHistoryDTO getAddressHistory(String address, Integer pageNumber, Integer pageSize){
+    public AddressTransactionHistoryDTO getAddressTransactionHistory(String address, Integer pageNumber, Integer pageSize){
 
         validateRequest(address);
 

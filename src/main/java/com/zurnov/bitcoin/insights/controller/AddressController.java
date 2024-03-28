@@ -56,7 +56,7 @@ public class AddressController {
             @RequestParam(required = false, defaultValue = "1") int pageNumber,
             @RequestParam(required = false, defaultValue = "10") int pageSize
     ) {
-        AddressTransactionHistoryDTO json = addressService.getAddressHistory(address, pageNumber, pageSize);
+        AddressTransactionHistoryDTO json = addressService.getAddressTransactionHistory(address, pageNumber, pageSize);
 
         return new ResponseEntity<>(json, HttpStatus.OK);
     }
