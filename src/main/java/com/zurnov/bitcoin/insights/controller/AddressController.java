@@ -6,12 +6,12 @@ import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.dto.AddressTransactionHistoryDTO;
 import com.zurnov.bitcoin.insights.service.AddressService;
 import com.zurnov.bitcoin.insights.service.NetworkClientService;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
@@ -51,8 +51,12 @@ public class AddressController {
     }
 
     @GetMapping("/getaddresshistory/{address}")
-    public ResponseEntity<AddressTransactionHistoryDTO> getAddressHistory(@PathVariable String address) {
-        AddressTransactionHistoryDTO json = addressService.getAddressHistory(address);
+    public ResponseEntity<AddressTransactionHistoryDTO> getAddressHistory(
+            @PathVariable String address,
+            @RequestParam(required = false, defaultValue = "1") int pageNumber,
+            @RequestParam(required = false, defaultValue = "10") int pageSize
+    ) {
+        AddressTransactionHistoryDTO json = addressService.getAddressHistory(address, pageNumber, pageSize);
 
         return new ResponseEntity<>(json, HttpStatus.OK);
     }

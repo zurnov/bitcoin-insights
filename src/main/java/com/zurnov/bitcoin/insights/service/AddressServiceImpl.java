@@ -1,9 +1,9 @@
 package com.zurnov.bitcoin.insights.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.dto.AddressTransactionHistoryDTO;
+import com.zurnov.bitcoin.insights.dto.TransactionDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
 import com.zurnov.bitcoin.insights.util.AddressUtil;
@@ -49,7 +49,7 @@ public class AddressServiceImpl implements AddressService {
 
     }
 
-    public AddressTransactionHistoryDTO getAddressHistory(String address){
+    public AddressTransactionHistoryDTO getAddressHistory(String address, Integer pageNumber, Integer pageSize){
 
         validateRequest(address);
 
@@ -64,7 +64,18 @@ public class AddressServiceImpl implements AddressService {
         jsonString = jsonString.replace("tx_hash", "txHash");
 
         try {
-            return objectMapper.readValue(jsonString, AddressTransactionHistoryDTO.class);
+
+            AddressTransactionHistoryDTO addressTransactionHistoryDTO  =
+                    objectMapper.readValue(jsonString, AddressTransactionHistoryDTO.class);
+
+            List<TransactionDTO> transactions =
+                    addressTransactionHistoryDTO.getTransactions()
+                            .stream()
+                            .skip((pageNumber - 1) * pageSize)
+                            .limit(pageSize).toList();
+            addressTransactionHistoryDTO.setTransactions(transactions);
+
+            return addressTransactionHistoryDTO;
         } catch (Exception e) {
             throw new OperationFailedException(e.getMessage());
         }
