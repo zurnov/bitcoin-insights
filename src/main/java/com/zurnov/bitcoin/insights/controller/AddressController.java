@@ -20,28 +20,12 @@ import java.util.ArrayList;
 public class AddressController {
 
     private final AddressService addressService;
-    private final NetworkClientService networkClientService;
-
-    private final ObjectMapper mapper;
 
     @Autowired
-    public AddressController(AddressService addressService, NetworkClientService networkClientService, ObjectMapper mapper) {
+    public AddressController(AddressService addressService) {
         this.addressService = addressService;
-        this.networkClientService = networkClientService;
-        this.mapper = mapper;
     }
 
-    @GetMapping("/getblockchaininfo")
-    public ResponseEntity<Object> getBlockchainInfo() {
-        String rpcResult = networkClientService.sendRPCCommand("getindexinfo", new ArrayList<>(), 8332);
-        try {
-            JsonResponse jsonResponse = mapper.readValue(rpcResult, JsonResponse.class);
-            return ResponseEntity.ok(jsonResponse);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error occurred");
-        }
-    }
 
     @GetMapping("/getaddressbalance/{address}")
     public ResponseEntity<AddressBalanceDTO> getAddressBalance(@PathVariable String address) {
