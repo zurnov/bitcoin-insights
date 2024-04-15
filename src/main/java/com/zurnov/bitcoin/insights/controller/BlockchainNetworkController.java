@@ -29,12 +29,21 @@ public class BlockchainNetworkController {
     }
 
     @GetMapping("/getblockinfobyhash/{blockHash}")
-    public ResponseEntity<BlockDTO> getBlockchainBlockInfo(@PathVariable String blockHash) {
+    public ResponseEntity<BlockDTO> getBlockInfoByHash(@PathVariable String blockHash) {
 
         BlockDTO result = blockchainBlockService.getBlockInfoByHash(blockHash);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @GetMapping("/getblockinfobyheight/{blockHeight}")
+    public ResponseEntity<BlockDTO> getBlockInfoByHeight(@PathVariable Integer blockHeight) {
+
+        BlockDTO result = blockchainBlockService.getBlockInfoByHeight(blockHeight);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 
 //TODO
 //    @GetMapping("/gettransactioninfo/{transactionHash}")

@@ -53,11 +53,17 @@ public class BlockchainBlockService {
         return createBlockObject(jsonString);
     }
 
-//        public String getBlockchainBlockInfoByBlockHeight(Integer blockHeight) {
-//        String jsonString = networkClientService.sendRPCCommand("getblockstats", List.of(blockHeight), 8332);
-//        System.out.println(jsonString);
-//        return jsonString;
-//    }
+    public BlockDTO getBlockInfoByHeight(Integer blockHeight) {
+
+        String hashString = networkClientService.sendRPCCommand("getblockhash", List.of(blockHeight), 8332);
+        JSONObject jsonObject = new JSONObject(hashString);
+
+        String blockHash = jsonObject.getString("result");
+        String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332);
+
+
+        return createBlockObject(jsonString);
+    }
 
 
 //TODO Create proper implementation
@@ -69,6 +75,7 @@ public class BlockchainBlockService {
 
         JSONObject jsonObject = new JSONObject(jsonString);
         List<String> transactions = new ArrayList<>();
+
         JSONArray jsonArray = jsonObject.getJSONObject("result").getJSONArray("tx");
 
         for (int i = 0; i < jsonArray.length(); i++) {
