@@ -2,6 +2,7 @@ package com.zurnov.bitcoin.insights.controller;
 
 import com.zurnov.bitcoin.insights.dto.BlockDTO;
 import com.zurnov.bitcoin.insights.dto.BlockchainNetworkInfoDTO;
+import com.zurnov.bitcoin.insights.dto.RawTransactionInfoDTO;
 import com.zurnov.bitcoin.insights.service.BlockchainBlockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,14 +46,13 @@ public class BlockchainNetworkController {
     }
 
 
-//TODO
-//    @GetMapping("/gettransactioninfo/{transactionHash}")
-//    public ResponseEntity<String> getTransactionInfo(@PathVariable String transactionHash) {
-//
-//        String result = blockchainBlockService.getTransactionInfo(transactionHash);
-//
-//        return new ResponseEntity<>(result, HttpStatus.OK);
-//    }
+    @GetMapping("/gettransactioninfo/{transactionHash}")
+    public ResponseEntity<RawTransactionInfoDTO> getRawTransactionInfo(@PathVariable String transactionHash) {
+
+        RawTransactionInfoDTO result = blockchainBlockService.getRawTransactionInfo(transactionHash);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
 
 
 }

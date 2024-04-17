@@ -2,6 +2,11 @@ package com.zurnov.bitcoin.insights.service;
 
 import com.zurnov.bitcoin.insights.dto.BlockDTO;
 import com.zurnov.bitcoin.insights.dto.BlockchainNetworkInfoDTO;
+import com.zurnov.bitcoin.insights.dto.RawTransactionInfoDTO;
+import com.zurnov.bitcoin.insights.dto.ScriptPubKey;
+import com.zurnov.bitcoin.insights.dto.ScriptSig;
+import com.zurnov.bitcoin.insights.dto.Vin;
+import com.zurnov.bitcoin.insights.dto.Vout;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,10 +71,118 @@ public class BlockchainBlockService {
     }
 
 
-//TODO Create proper implementation
-//    public String getTransactionInfo(String transactionHash) {
-//        return networkClientService.sendRPCCommand("getrawtransaction", List.of(transactionHash, true), 8332);
-//    }
+    public RawTransactionInfoDTO getRawTransactionInfo(String transactionHash) {
+
+        String jsonString = networkClientService.sendRPCCommand("getrawtransaction", List.of(transactionHash, true), 8332);
+
+        return createTransactionInfoObject(jsonString);
+    }
+
+
+    private static RawTransactionInfoDTO createTransactionInfoObject(String jsonString) {
+        
+        JSONObject jsonObject = new JSONObject(jsonString);
+        JSONObject resultObject = jsonObject.getJSONObject("result");
+
+        return mapRawTransactionInfoFields(resultObject);
+    }
+
+    private static RawTransactionInfoDTO mapRawTransactionInfoFields(JSONObject resultObject) {
+
+        RawTransactionInfoDTO rawTransactionInfoDTO = mapSimpleRawTransactionInfoFields(resultObject);
+
+        // Map Vin
+        JSONArray vinArray = resultObject.getJSONArray("vin");
+        List<Vin> vinList = mapVinFields(vinArray);
+        rawTransactionInfoDTO.setVin(vinList);
+
+        // Map Vout
+        List<Vout> voutList = mapVoutFields(resultObject);
+        rawTransactionInfoDTO.setVout(voutList);
+        return rawTransactionInfoDTO;
+    }
+
+    private static RawTransactionInfoDTO mapSimpleRawTransactionInfoFields(JSONObject resultObject) {
+
+        RawTransactionInfoDTO rawTransactionInfoDTO = new RawTransactionInfoDTO();
+
+        rawTransactionInfoDTO.setHex(resultObject.getString("hex"));
+        rawTransactionInfoDTO.setTxId(resultObject.getString("txid"));
+        rawTransactionInfoDTO.setHash(resultObject.getString("hash"));
+        rawTransactionInfoDTO.setSize(resultObject.getInt("size"));
+        rawTransactionInfoDTO.setVBytes(resultObject.getInt("vsize"));
+        rawTransactionInfoDTO.setWeight(resultObject.getInt("weight"));
+        rawTransactionInfoDTO.setVersion(resultObject.getInt("version"));
+        rawTransactionInfoDTO.setLockTime(resultObject.getLong("locktime"));
+        rawTransactionInfoDTO.setBlockHash(resultObject.getString("blockhash"));
+        rawTransactionInfoDTO.setConfirmations(resultObject.getInt("confirmations"));
+        rawTransactionInfoDTO.setBlockTime(resultObject.getLong("blocktime"));
+        rawTransactionInfoDTO.setTime(resultObject.getLong("time"));
+
+        return rawTransactionInfoDTO;
+    }
+
+    private static List<Vout> mapVoutFields(JSONObject resultObject) {
+
+        JSONArray voutArray = resultObject.getJSONArray("vout");
+        List<Vout> voutList = new ArrayList<>();
+        for (int i = 0; i < voutArray.length(); i++) {
+            JSONObject voutObject = voutArray.getJSONObject(i);
+            Vout vout = new Vout();
+            vout.setValue(voutObject.getDouble("value"));
+            vout.setN(voutObject.getInt("n"));
+
+            // Map ScriptPubKey
+            JSONObject scriptPubKeyObject = voutObject.getJSONObject("scriptPubKey");
+            ScriptPubKey scriptPubKey = new ScriptPubKey();
+            scriptPubKey.setAsm(scriptPubKeyObject.getString("asm"));
+            scriptPubKey.setHex(scriptPubKeyObject.getString("hex"));
+            scriptPubKey.setType(scriptPubKeyObject.getString("type"));
+            scriptPubKey.setAddress(scriptPubKeyObject.optString("address"));
+            vout.setScriptPubKey(scriptPubKey);
+
+            voutList.add(vout);
+        }
+
+        return voutList;
+    }
+
+    private static List<Vin> mapVinFields(JSONArray vinArray) {
+
+        List<Vin> vinList = new ArrayList<>();
+        for (int i = 0; i < vinArray.length(); i++) {
+            JSONObject vinObject = vinArray.getJSONObject(i);
+            Vin vin = new Vin();
+            vin.setTxId(vinObject.optString("txid"));
+            vin.setVout(vinObject.optInt("vout"));
+            vin.setCoinbase(vinObject.optString("coinbase"));
+            vin.setSequence(vinObject.getLong("sequence"));
+
+            // Map ScriptSig
+            JSONObject scriptSigObject = vinObject.optJSONObject("scriptSig");
+            if (scriptSigObject != null) {
+                ScriptSig scriptSig = new ScriptSig();
+                scriptSig.setAsm(scriptSigObject.getString("asm"));
+                scriptSig.setHex(scriptSigObject.getString("hex"));
+                vin.setScriptSig(scriptSig);
+            }
+
+
+            // Map txInWitness
+            JSONArray txInWitnessArray = vinObject.optJSONArray("txinwitness");
+            if (txInWitnessArray != null) {
+                List<String> txInWitnessList = new ArrayList<>();
+                for (int j = 0; j < txInWitnessArray.length(); j++) {
+                    txInWitnessList.add(txInWitnessArray.getString(j));
+                }
+                vin.setTxInWitness(txInWitnessList);
+            }
+
+            vinList.add(vin);
+        }
+
+        return vinList;
+    }
 
     private BlockDTO createBlockObject(String jsonString) {
 
