@@ -7,6 +7,7 @@ import com.zurnov.bitcoin.insights.dto.ScriptPubKey;
 import com.zurnov.bitcoin.insights.dto.ScriptSig;
 import com.zurnov.bitcoin.insights.dto.Vin;
 import com.zurnov.bitcoin.insights.dto.Vout;
+import com.zurnov.bitcoin.insights.exception.ValidationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,14 +52,14 @@ public class BlockchainBlockService {
         return blockchainNetworkInfoDTO;
     }
 
-    public BlockDTO getBlockInfoByHash(String blockHash) {
+    public BlockDTO getBlockInfoByHash(String blockHash, int pageNumber, int pageSize) {
 
         String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332);
 
-        return createBlockObject(jsonString);
+        return createBlockObject(jsonString, pageNumber, pageSize);
     }
 
-    public BlockDTO getBlockInfoByHeight(Integer blockHeight) {
+    public BlockDTO getBlockInfoByHeight(Integer blockHeight, int pageNumber, int pageSize) {
 
         String hashString = networkClientService.sendRPCCommand("getblockhash", List.of(blockHeight), 8332);
         JSONObject jsonObject = new JSONObject(hashString);
@@ -67,7 +68,7 @@ public class BlockchainBlockService {
         String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332);
 
 
-        return createBlockObject(jsonString);
+        return createBlockObject(jsonString, pageNumber, pageSize);
     }
 
 
@@ -184,7 +185,7 @@ public class BlockchainBlockService {
         return vinList;
     }
 
-    private BlockDTO createBlockObject(String jsonString) {
+    private BlockDTO createBlockObject(String jsonString, int pageNumber, int pageSize) {
 
         JSONObject jsonObject = new JSONObject(jsonString);
         List<String> transactions = new ArrayList<>();
@@ -195,6 +196,12 @@ public class BlockchainBlockService {
             String tx = jsonArray.getString(i);
             transactions.add(tx);
         }
+
+        int totalPages = calculatePagination(transactions.size(), pageNumber, pageSize);
+
+        transactions = transactions.stream()
+                .skip((pageNumber - 1) * pageSize)
+                .limit(pageSize).toList();
 
         return BlockDTO.builder()
                 .strippedSize(jsonObject.getJSONObject("result").getLong("strippedsize"))
@@ -216,6 +223,21 @@ public class BlockchainBlockService {
                 .previousBlockHash(jsonObject.getJSONObject("result").getString("previousblockhash"))
                 .nextBlockHash(jsonObject.getJSONObject("result").getString("nextblockhash"))
                 .transactions(transactions)
+                .totalPagesOfTransactions(totalPages)
                 .build();
+    }
+
+    private int calculatePagination(int listSize, int pageNumber, int pageSize) {
+
+        int totalPages = listSize / pageSize;
+        if (listSize % pageSize != 0) {
+            totalPages++;
+        }
+
+        if (pageNumber < 1 || pageNumber > totalPages) {
+            throw new ValidationException("Invalid page number. Please provide a page number between 1 and " + totalPages);
+        }
+
+        return totalPages;
     }
 }

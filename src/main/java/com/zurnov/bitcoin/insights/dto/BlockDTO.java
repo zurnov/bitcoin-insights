@@ -35,5 +35,5 @@ public class BlockDTO {
     private String previousBlockHash;
     private String nextBlockHash;
     private List<String> transactions;
-
+    private int totalPagesOfTransactions;
 }
