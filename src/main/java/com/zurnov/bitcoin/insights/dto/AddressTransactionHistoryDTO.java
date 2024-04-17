@@ -13,4 +13,6 @@ public class AddressTransactionHistoryDTO {
 
     private List<TransactionDTO> transactions;
 
+    private int totalPages;
+
 }

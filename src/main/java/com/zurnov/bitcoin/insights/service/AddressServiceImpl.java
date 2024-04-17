@@ -68,17 +68,33 @@ public class AddressServiceImpl implements AddressService {
             AddressTransactionHistoryDTO addressTransactionHistoryDTO  =
                     objectMapper.readValue(jsonString, AddressTransactionHistoryDTO.class);
 
+            int totalPages = calculatePagination(addressTransactionHistoryDTO.getTransactions().size(), pageSize, pageNumber);
+
             List<TransactionDTO> transactions =
                     addressTransactionHistoryDTO.getTransactions()
                             .stream()
                             .skip((pageNumber - 1) * pageSize)
                             .limit(pageSize).toList();
             addressTransactionHistoryDTO.setTransactions(transactions);
+            addressTransactionHistoryDTO.setTotalPages(totalPages);
 
             return addressTransactionHistoryDTO;
         } catch (Exception e) {
             throw new OperationFailedException(e.getMessage());
         }
+    }
+
+    private int calculatePagination(int listSize, int pageSize, int pageNumber) {
+        int totalPages = listSize / pageSize;
+        if (listSize % pageSize != 0) {
+            totalPages++;
+        }
+
+        if (pageNumber < 1 || pageNumber > totalPages) {
+            throw new ValidationException("Invalid page number. Please provide a page number between 1 and " + totalPages);
+        }
+
+        return totalPages;
     }
 
     private void validateRequest(String address) {
