@@ -27,6 +27,7 @@ services:
       - RPC_ADDRESS=${RPC_ADDRESS}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      - KEYSTORE_PASSWORD=${KEYSTORE_PASSWORD}
     networks:
       - bitcoin-insights-network
 
