@@ -2,6 +2,7 @@ package com.zurnov.bitcoin.insights.controller;
 
 import com.zurnov.bitcoin.insights.dto.UserRoleDTO;
 import com.zurnov.bitcoin.insights.service.UserRoleService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user-roles")
+@Hidden
 public class UserRoleController {
 
     private final UserRoleService userRoleService;
