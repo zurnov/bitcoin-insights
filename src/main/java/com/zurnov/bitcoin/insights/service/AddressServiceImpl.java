@@ -7,6 +7,7 @@ import com.zurnov.bitcoin.insights.dto.TransactionDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
 import com.zurnov.bitcoin.insights.util.AddressUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 public class AddressServiceImpl implements AddressService {
 
@@ -30,34 +32,39 @@ public class AddressServiceImpl implements AddressService {
         this.objectMapper = objectMapper;
     }
 
-    public AddressBalanceDTO getAddressBalance(String address) {
+    public AddressBalanceDTO getAddressBalance(String address, String requestId) {
 
-        validateRequest(address);
+        log.info("  >> getAddressBalance ID: {}", requestId);
+
+        validateRequest(address, requestId);
 
         String addressLookupScriptHash = AddressUtil.generateLookupScriptHash(address);
 
         String jsonString = networkClientService.sendRpcTCPRequest(
                 "blockchain.scripthash.get_balance",
-                List.of(addressLookupScriptHash), 50001);
+                List.of(addressLookupScriptHash), 50001, requestId);
 
         JSONObject json = new JSONObject(jsonString);
 
         Long confirmedInteger = json.getJSONObject("result").getLong("confirmed");
         Long unconfirmedInteger = json.getJSONObject("result").getLong("unconfirmed");
 
+        log.info("  << getAddressBalance ID: {}", requestId);
         return new AddressBalanceDTO(confirmedInteger, unconfirmedInteger);
 
     }
 
-    public AddressTransactionHistoryDTO getAddressTransactionHistory(String address, Integer pageNumber, Integer pageSize){
+    public AddressTransactionHistoryDTO getAddressTransactionHistory(String address, Integer pageNumber, Integer pageSize, String requestId){
 
-        validateRequest(address);
+        log.info("  >> getAddressTransactionHistory ID: {}", requestId);
+
+        validateRequest(address, requestId);
 
         String addressLookupScriptHash = AddressUtil.generateLookupScriptHash(address);
 
         String jsonString = networkClientService.sendRpcTCPRequest(
                 "blockchain.scripthash.get_history",
-                List.of(addressLookupScriptHash), 50001);
+                List.of(addressLookupScriptHash), 50001, requestId);
 
         jsonString = jsonString.replace("result", "transactions");
         jsonString = jsonString.replace("height", "blockHeight");
@@ -78,6 +85,8 @@ public class AddressServiceImpl implements AddressService {
             addressTransactionHistoryDTO.setTransactions(transactions);
             addressTransactionHistoryDTO.setTotalPages(totalPages);
 
+            log.info("  << getAddressTransactionHistory ID: {}", requestId);
+
             return addressTransactionHistoryDTO;
         } catch (Exception e) {
             throw new OperationFailedException(e.getMessage());
@@ -97,8 +106,9 @@ public class AddressServiceImpl implements AddressService {
         return totalPages;
     }
 
-    private void validateRequest(String address) {
+    private void validateRequest(String address, String requestId) {
 
+        log.info("      >> validateRequest ID: {}", requestId);
         if (address == null || address.isEmpty()) {
             throw new ValidationException("Address must not be empty or null!");
         }
@@ -110,7 +120,7 @@ public class AddressServiceImpl implements AddressService {
         } catch (Exception e) {
             throw new ValidationException("Invalid Address format!");
         }
-
+        log.info("      << validateRequest ID: {}", requestId);
     }
 
 }

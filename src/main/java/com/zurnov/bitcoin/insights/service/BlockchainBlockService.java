@@ -8,6 +8,7 @@ import com.zurnov.bitcoin.insights.dto.ScriptSig;
 import com.zurnov.bitcoin.insights.dto.Vin;
 import com.zurnov.bitcoin.insights.dto.Vout;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 public class BlockchainBlockService {
 
@@ -27,11 +29,12 @@ public class BlockchainBlockService {
         this.networkClientService = networkClientService;
     }
 
-    public BlockchainNetworkInfoDTO getBlockchainNetworkInfo() {
+    public BlockchainNetworkInfoDTO getBlockchainNetworkInfo(String requestId) {
 
+        log.info("  >> getBlockchainNetworkInfo ID: {}", requestId);
         BlockchainNetworkInfoDTO blockchainNetworkInfoDTO;
 
-        String jsonString = networkClientService.sendRPCCommand("getmininginfo", new ArrayList<>(), 8332);
+        String jsonString = networkClientService.sendRPCCommand("getmininginfo", new ArrayList<>(), 8332, requestId);
 
         JSONObject jsonObject = new JSONObject(jsonString);
 
@@ -49,47 +52,58 @@ public class BlockchainBlockService {
                 .chain(chain)
                 .build();
 
+        log.info("  << getBlockchainNetworkInfo ID: {}", requestId);
+
         return blockchainNetworkInfoDTO;
     }
 
-    public BlockDTO getBlockInfoByHash(String blockHash, int pageNumber, int pageSize) {
+    public BlockDTO getBlockInfoByHash(String blockHash, int pageNumber, int pageSize, String requestId) {
 
-        String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332);
+        log.info("  >> getBlockInfoByHash ID: {}", requestId);
+        String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332, requestId);
+
+        log.info("  << getBlockInfoByHash ID: {}", requestId);
 
         return createBlockObject(jsonString, pageNumber, pageSize);
     }
 
-    public BlockDTO getBlockInfoByHeight(Integer blockHeight, int pageNumber, int pageSize) {
+    public BlockDTO getBlockInfoByHeight(Integer blockHeight, int pageNumber, int pageSize, String requestId) {
 
-        String hashString = networkClientService.sendRPCCommand("getblockhash", List.of(blockHeight), 8332);
+        log.info("  >> getBlockInfoByHeight ID: {}", requestId);
+        String hashString = networkClientService.sendRPCCommand("getblockhash", List.of(blockHeight), 8332, requestId);
         JSONObject jsonObject = new JSONObject(hashString);
 
         String blockHash = jsonObject.getString("result");
-        String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332);
-
+        String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332, requestId);
+        log.info("  << getBlockInfoByHeight ID: {}", requestId);
 
         return createBlockObject(jsonString, pageNumber, pageSize);
     }
 
 
-    public RawTransactionInfoDTO getRawTransactionInfo(String transactionHash) {
+    public RawTransactionInfoDTO getRawTransactionInfo(String transactionHash, String requestId) {
 
-        String jsonString = networkClientService.sendRPCCommand("getrawtransaction", List.of(transactionHash, true), 8332);
+        log.info("  >> getRawTransactionInfo ID: {}", requestId);
 
-        return createTransactionInfoObject(jsonString);
+        String jsonString = networkClientService.sendRPCCommand("getrawtransaction", List.of(transactionHash, true), 8332, requestId);
+        RawTransactionInfoDTO rawTransactionInfoDTO = createTransactionInfoObject(jsonString, requestId);
+        log.info("  << getRawTransactionInfo ID: {}", requestId);
+        return rawTransactionInfoDTO;
     }
 
 
-    private static RawTransactionInfoDTO createTransactionInfoObject(String jsonString) {
-        
+    private static RawTransactionInfoDTO createTransactionInfoObject(String jsonString, String requestId) {
+        log.info("          >> createTransactionInfoObject ID: {}", requestId);
         JSONObject jsonObject = new JSONObject(jsonString);
         JSONObject resultObject = jsonObject.getJSONObject("result");
+        RawTransactionInfoDTO rawTransactionInfoDTO = mapRawTransactionInfoFields(resultObject, requestId);
+        log.info("          << createTransactionInfoObject ID: {}", requestId);
 
-        return mapRawTransactionInfoFields(resultObject);
+        return rawTransactionInfoDTO;
     }
 
-    private static RawTransactionInfoDTO mapRawTransactionInfoFields(JSONObject resultObject) {
-
+    private static RawTransactionInfoDTO mapRawTransactionInfoFields(JSONObject resultObject, String requestId) {
+        log.info("              >> mapRawTransactionInfoFields ID: {}", requestId);
         RawTransactionInfoDTO rawTransactionInfoDTO = mapSimpleRawTransactionInfoFields(resultObject);
 
         // Map Vin
@@ -100,6 +114,8 @@ public class BlockchainBlockService {
         // Map Vout
         List<Vout> voutList = mapVoutFields(resultObject);
         rawTransactionInfoDTO.setVout(voutList);
+
+        log.info("              << mapRawTransactionInfoFields ID: {}", requestId);
         return rawTransactionInfoDTO;
     }
 

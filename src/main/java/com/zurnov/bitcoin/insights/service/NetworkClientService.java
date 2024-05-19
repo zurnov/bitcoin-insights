@@ -3,9 +3,8 @@ package com.zurnov.bitcoin.insights.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zurnov.bitcoin.insights.config.BitcoinRPCConfig;
 import com.zurnov.bitcoin.insights.domain.RPCRequest;
-import com.zurnov.bitcoin.insights.dto.AddressBalanceDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
-import org.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Component
 public class NetworkClientService {
 
@@ -35,7 +35,10 @@ public class NetworkClientService {
         this.restTemplate = restTemplate;
     }
 
-    public String sendRPCCommand(String method, List<Object> params, int port) {
+    public String sendRPCCommand(String method, List<Object> params, int port, String requestId) {
+
+        log.info("      >> sendRPCCommand ID: {}", requestId);
+
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth(config.getRpcUser(), config.getRpcPassword());
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -47,10 +50,15 @@ public class NetworkClientService {
 
         String url = "http://" + config.getRpcAddress() + ":" + port;
 
+        log.info("      << sendRPCCommand ID: {}", requestId);
+
         return restTemplate.postForObject(url, entity, String.class);
     }
 
-    public String sendRpcTCPRequest(String method, List<Object> params, int port) {
+    public String sendRpcTCPRequest(String method, List<Object> params, int port, String requestId) {
+
+        log.info("      >> sendRPCCommand ID: {}", requestId);
+
         try (Socket socket = new Socket(config.getRpcAddress(), port);
              BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
 
@@ -67,6 +75,8 @@ public class NetworkClientService {
             out.flush();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            log.info("      << sendRpcTCPRequest ID: {}", requestId);
 
             return in.readLine();
 
