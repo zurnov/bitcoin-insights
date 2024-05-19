@@ -7,6 +7,7 @@ import com.zurnov.bitcoin.insights.dto.ScriptPubKey;
 import com.zurnov.bitcoin.insights.dto.ScriptSig;
 import com.zurnov.bitcoin.insights.dto.Vin;
 import com.zurnov.bitcoin.insights.dto.Vout;
+import com.zurnov.bitcoin.insights.exception.ResourceNotFoundException;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
@@ -70,6 +71,7 @@ public class BlockchainBlockService {
     public BlockDTO getBlockInfoByHeight(Integer blockHeight, int pageNumber, int pageSize, String requestId) {
 
         log.info("  >> getBlockInfoByHeight ID: {}", requestId);
+        blockHeightValidation(blockHeight, requestId);
         String hashString = networkClientService.sendRPCCommand("getblockhash", List.of(blockHeight), 8332, requestId);
         JSONObject jsonObject = new JSONObject(hashString);
 
@@ -239,7 +241,7 @@ public class BlockchainBlockService {
                 .bits(jsonObject.getJSONObject("result").getString("bits"))
                 .chainWork(jsonObject.getJSONObject("result").getString("chainwork"))
                 .previousBlockHash(jsonObject.getJSONObject("result").getString("previousblockhash"))
-                .nextBlockHash(jsonObject.getJSONObject("result").getString("nextblockhash"))
+                .nextBlockHash(jsonObject.getJSONObject("result").optString("nextblockhash"))
                 .transactions(transactions)
                 .totalPagesOfTransactions(totalPages)
                 .build();
@@ -247,6 +249,22 @@ public class BlockchainBlockService {
         log.info("      << createBlockObject ID: {}", requestId);
         return blockDTO;
     }
+
+    private void blockHeightValidation(Integer blockHeight, String requestId) {
+
+        log.info("      >> blockHeightValidation ID: {}", requestId);
+        BlockchainNetworkInfoDTO blockInfo = getBlockchainNetworkInfo(requestId);
+
+        if (blockHeight > blockInfo.getBlocks()) {
+            throw new ResourceNotFoundException("blockHeight exceeds latest block height. Latest block : " + blockInfo.getBlocks());
+        }
+        if (blockHeight <= 0) {
+            throw new ValidationException("blockHeight must be a positive number!");
+        }
+
+        log.info("      << blockHeightValidation ID: {}", requestId);
+    }
+
 
     private int calculatePagination(int listSize, int pageNumber, int pageSize) {
 
