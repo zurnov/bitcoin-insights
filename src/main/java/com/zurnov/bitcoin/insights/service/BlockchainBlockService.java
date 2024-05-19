@@ -61,10 +61,10 @@ public class BlockchainBlockService {
 
         log.info("  >> getBlockInfoByHash ID: {}", requestId);
         String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332, requestId);
-
+        BlockDTO blockDTO = createBlockObject(jsonString, pageNumber, pageSize, requestId);
         log.info("  << getBlockInfoByHash ID: {}", requestId);
 
-        return createBlockObject(jsonString, pageNumber, pageSize);
+        return blockDTO;
     }
 
     public BlockDTO getBlockInfoByHeight(Integer blockHeight, int pageNumber, int pageSize, String requestId) {
@@ -75,9 +75,10 @@ public class BlockchainBlockService {
 
         String blockHash = jsonObject.getString("result");
         String jsonString = networkClientService.sendRPCCommand("getblock", List.of(blockHash), 8332, requestId);
+        BlockDTO blockDTO = createBlockObject(jsonString, pageNumber, pageSize, requestId);
         log.info("  << getBlockInfoByHeight ID: {}", requestId);
 
-        return createBlockObject(jsonString, pageNumber, pageSize);
+        return blockDTO;
     }
 
 
@@ -201,8 +202,9 @@ public class BlockchainBlockService {
         return vinList;
     }
 
-    private BlockDTO createBlockObject(String jsonString, int pageNumber, int pageSize) {
+    private BlockDTO createBlockObject(String jsonString, int pageNumber, int pageSize, String requestId) {
 
+        log.info("      >> createBlockObject ID: {}", requestId);
         JSONObject jsonObject = new JSONObject(jsonString);
         List<String> transactions = new ArrayList<>();
 
@@ -219,7 +221,7 @@ public class BlockchainBlockService {
                 .skip((pageNumber - 1) * pageSize)
                 .limit(pageSize).toList();
 
-        return BlockDTO.builder()
+        BlockDTO blockDTO = BlockDTO.builder()
                 .strippedSize(jsonObject.getJSONObject("result").getLong("strippedsize"))
                 .size(jsonObject.getJSONObject("result").getLong("size"))
                 .weight(jsonObject.getJSONObject("result").getLong("weight"))
@@ -241,6 +243,9 @@ public class BlockchainBlockService {
                 .transactions(transactions)
                 .totalPagesOfTransactions(totalPages)
                 .build();
+
+        log.info("      << createBlockObject ID: {}", requestId);
+        return blockDTO;
     }
 
     private int calculatePagination(int listSize, int pageNumber, int pageSize) {
