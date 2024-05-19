@@ -39,20 +39,26 @@ public class NetworkClientService {
 
         log.info("      >> sendRPCCommand ID: {}", requestId);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBasicAuth(config.getRpcUser(), config.getRpcPassword());
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        String jsonRpc = "2.0";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBasicAuth(config.getRpcUser(), config.getRpcPassword());
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            String jsonRpc = "2.0";
 
-        RPCRequest request = new RPCRequest(jsonRpc, UUID.randomUUID().toString(), method, params);
+            RPCRequest request = new RPCRequest(jsonRpc, UUID.randomUUID().toString(), method, params);
 
-        HttpEntity<RPCRequest> entity = new HttpEntity<>(request, headers);
+            HttpEntity<RPCRequest> entity = new HttpEntity<>(request, headers);
 
-        String url = "http://" + config.getRpcAddress() + ":" + port;
+            String url = "http://" + config.getRpcAddress() + ":" + port;
 
-        log.info("      << sendRPCCommand ID: {}", requestId);
 
-        return restTemplate.postForObject(url, entity, String.class);
+            String response = restTemplate.postForObject(url, entity, String.class);
+
+            log.info("      << sendRPCCommand ID: {}", requestId);
+            return response;
+        } catch (Exception e) {
+            throw new OperationFailedException(e.getMessage());
+        }
     }
 
     public String sendRpcTCPRequest(String method, List<Object> params, int port, String requestId) {
