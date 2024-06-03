@@ -1,5 +1,5 @@
 # ⚡ Bitcoin Insights
-
+## Note! This is still proof of concept!
  Bitcoin blockchain explorer used for providing in-depth insights into address balances, transaction details, techical information and critical network metrics such as hash power, mining difficulty, and the latest blockchain blocks.
 
 ## 🚀 Demo
