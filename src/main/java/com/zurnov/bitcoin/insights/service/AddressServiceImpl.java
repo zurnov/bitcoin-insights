@@ -7,6 +7,7 @@ import com.zurnov.bitcoin.insights.dto.TransactionDTO;
 import com.zurnov.bitcoin.insights.exception.OperationFailedException;
 import com.zurnov.bitcoin.insights.exception.ValidationException;
 import com.zurnov.bitcoin.insights.util.AddressUtil;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.NetworkParameters;
@@ -76,12 +77,14 @@ public class AddressServiceImpl implements AddressService {
                     objectMapper.readValue(jsonString, AddressTransactionHistoryDTO.class);
 
             int totalPages = calculatePagination(addressTransactionHistoryDTO.getTransactions().size(), pageSize, pageNumber);
+            List<TransactionDTO> allTransactions = addressTransactionHistoryDTO.getTransactions();
+            Collections.reverse(allTransactions);
 
             List<TransactionDTO> transactions =
-                    addressTransactionHistoryDTO.getTransactions()
-                            .stream()
-                            .skip((pageNumber - 1) * pageSize)
-                            .limit(pageSize).toList();
+                allTransactions
+                    .stream()
+                    .skip((pageNumber - 1) * pageSize)
+                    .limit(pageSize).toList();
             addressTransactionHistoryDTO.setTransactions(transactions);
             addressTransactionHistoryDTO.setTotalPages(totalPages);
 
