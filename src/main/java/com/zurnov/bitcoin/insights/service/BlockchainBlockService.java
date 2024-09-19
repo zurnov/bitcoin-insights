@@ -134,10 +134,10 @@ public class BlockchainBlockService {
         rawTransactionInfoDTO.setWeight(resultObject.getInt("weight"));
         rawTransactionInfoDTO.setVersion(resultObject.getInt("version"));
         rawTransactionInfoDTO.setLockTime(resultObject.getLong("locktime"));
-        rawTransactionInfoDTO.setBlockHash(resultObject.getString("blockhash"));
-        rawTransactionInfoDTO.setConfirmations(resultObject.getInt("confirmations"));
-        rawTransactionInfoDTO.setBlockTime(resultObject.getLong("blocktime"));
-        rawTransactionInfoDTO.setTime(resultObject.getLong("time"));
+        rawTransactionInfoDTO.setBlockHash(resultObject.optString("blockhash"));
+        rawTransactionInfoDTO.setConfirmations(resultObject.optInt("confirmations"));
+        rawTransactionInfoDTO.setBlockTime(resultObject.optLong("blocktime"));
+        rawTransactionInfoDTO.setTime(resultObject.optLong("time"));
 
         return rawTransactionInfoDTO;
     }
