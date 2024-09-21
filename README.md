@@ -11,4 +11,4 @@
 ## ⚙️ Design architecture
 Simple overview of the application architecture and dependent services.
 
-![diagram](https://github.com/zurnov/bitcoin-insights/assets/55513656/a0a9f2d8-cae1-4e25-a9bb-75779bb7f4c0)
+![diagram](https://github.com/user-attachments/assets/272296e5-8032-4088-aa1b-98721b2fb376)
