@@ -24,15 +24,19 @@ import java.util.List;
 public class BlockchainBlockService {
 
     private final NetworkClientService networkClientService;
+    private final BitcoinPriceService bitcoinPriceService;
 
     @Autowired
-    public BlockchainBlockService(NetworkClientService networkClientService) {
+    public BlockchainBlockService(NetworkClientService networkClientService,
+        BitcoinPriceService bitcoinPriceService) {
         this.networkClientService = networkClientService;
+      this.bitcoinPriceService = bitcoinPriceService;
     }
 
     public BlockchainNetworkInfoDTO getBlockchainNetworkInfo(String requestId) {
 
         log.info("  >> getBlockchainNetworkInfo ID: {}", requestId);
+
         BlockchainNetworkInfoDTO blockchainNetworkInfoDTO;
 
         String jsonString = networkClientService.sendRPCCommand("getmininginfo", new ArrayList<>(), 8332, requestId);
@@ -51,6 +55,7 @@ public class BlockchainBlockService {
                 .networkHashPerSecond(networkHashPerSecond)
                 .pooledTx(pooledTx)
                 .chain(chain)
+                .bitcoinPrice(bitcoinPriceService.getBitcoinPriceInUsd())
                 .build();
 
         log.info("  << getBlockchainNetworkInfo ID: {}", requestId);

@@ -18,5 +18,6 @@ public class BlockchainNetworkInfoDTO {
     private BigDecimal networkHashPerSecond;
     private Long pooledTx;
     private String chain;
+    private Double bitcoinPrice;
 
 }
