@@ -97,7 +97,13 @@ public class AddressServiceImpl implements AddressService {
     }
 
     private int calculatePagination(int listSize, int pageSize, int pageNumber) {
+
+        if (listSize == 0) {
+            return 0;
+        }
+
         int totalPages = listSize / pageSize;
+
         if (listSize % pageSize != 0) {
             totalPages++;
         }
