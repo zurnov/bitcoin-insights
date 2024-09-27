@@ -23,7 +23,10 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:8000",
                         "https://api.zurnov.com",
                         "https://zurnov.com",
-                        "https://www.zurnov.com")
+                        "https://www.zurnov.com",
+                        "https://explore21.com",
+                        "https://www.explore21.com",
+                        "https://api.explore21.com")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }
