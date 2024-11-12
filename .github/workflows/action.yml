@@ -1,20 +1,19 @@
-name: publish
+name: Publish and Deploy
 
 on:
   push:
     branches:
       - main
+      - dev
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: java-app-bitcoin:latest
 
-
 jobs:
   publish:
-    name: publish image
+    name: Publish Image
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
       - name: Login
@@ -25,28 +24,53 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Build with jar
+      - name: Build with Gradle
         run: |
           chmod +x ./gradlew
           ./gradlew clean build
-      - name: Build and Publish
+      - name: Build and Publish Docker Image
         run: |
           docker build . --tag ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}
           docker push ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.IMAGE_NAME }}
-          
 
-  deploy:
+  deploy-prod:
+    if: github.ref == 'refs/heads/main'
     needs: publish
-    name: deploy image
+    name: Deploy Prod
     runs-on: ubuntu-latest
-
     steps:
-      - name: install ssh keys
+      - name: Install SSH Key
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-      - name: connect and pull
-        run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORK_DIR }} && docker compose pull && docker compose up -d && exit"
-      - name: cleanup
+      - name: Connect and Deploy Prod
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd ${{ secrets.WORK_DIR }} &&
+            docker compose up -d java-api-prod &&
+            exit
+          "
+      - name: Cleanup SSH Key
+        run: rm -rf ~/.ssh
+
+  deploy-dev:
+    if: github.ref == 'refs/heads/dev'
+    needs: publish
+    name: Deploy Dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install SSH Key
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
+      - name: Connect and Deploy Dev
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+            cd ${{ secrets.WORK_DIR }} &&
+            docker compose up -d java-api-dev &&
+            exit
+          "
+      - name: Cleanup SSH Key
         run: rm -rf ~/.ssh
