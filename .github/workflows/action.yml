@@ -48,7 +48,8 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd ${{ secrets.WORK_DIR }} &&
-            docker compose up -d java-api-prod &&
+            docker compose up -d --build &&
+            docker compose exec -e SPRING_PROFILES_ACTIVE=dev java-api-prod &&
             exit
           "
       - name: Cleanup SSH Key
@@ -69,7 +70,8 @@ jobs:
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
             cd ${{ secrets.WORK_DIR }} &&
-            docker compose up -d java-api-dev &&
+            docker compose up -d --build &&
+            docker compose exec -e SPRING_PROFILES_ACTIVE=dev java-api-dev &&
             exit
           "
       - name: Cleanup SSH Key
