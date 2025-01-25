@@ -17,7 +17,7 @@ services:
     image: postgres:16.1
     restart: always
     environment:
-      POSTGRES_DB: bitcoin_insights_db
+      POSTGRES_DB: bitcoin_insights_db_dev
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
