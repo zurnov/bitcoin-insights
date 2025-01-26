@@ -1,6 +1,6 @@
 package com.zurnov.bitcoin.insights.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
@@ -8,9 +8,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class PriceFetcherService {
@@ -20,45 +17,37 @@ public class PriceFetcherService {
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Getter
-  private Map<String, Map<String, Double>> cachedPrices = new HashMap<>();
+  private Double cachedPrice;
 
   @Value("${crypto.price.api.url}")
   private String cryptoPriceApiUrl;
 
-  @Value("${crypto.coins}")
-  private String[] coins;
-
-  @Value("${crypto.currencies}")
-  private String[] currencies;
-
-
   @PostConstruct
   public void init() {
-    cachedPrices = getCryptoPrice(coins, currencies);
+    fetchCryptoPrice();
   }
 
-  // It's 300000 (5 minutes) since we are using the free plan
-  // for https://www.coingecko.com and we have limited requests 10 000 to be exact
   @Scheduled(fixedRate = 300000)
   private void fetchCryptoPrice() {
-    cachedPrices = getCryptoPrice(coins, currencies);
+    cachedPrice = getCryptoPrice();
   }
 
-  private Map<String, Map<String, Double>> getCryptoPrice(String[] coins, String[] currencies) {
-    String coinIds = String.join(",", coins);
-    String currencyIds = String.join(",", currencies);
-    String apiUrl = String.format(cryptoPriceApiUrl, coinIds, currencyIds);
+  private Double getCryptoPrice() {
 
-    String jsonResponse = restTemplate.getForObject(apiUrl, String.class);
-    Map<String, Map<String, Double>> cryptoPrices = new HashMap<>();
+    String jsonResponse = restTemplate.getForObject(cryptoPriceApiUrl, String.class);
 
     try {
-      cryptoPrices = objectMapper.readValue(jsonResponse, new TypeReference<>() {});
-
+      JsonNode rootNode = objectMapper.readTree(jsonResponse);
+      JsonNode euroNode = rootNode.path("bpi").path("EUR");
+      if (!euroNode.isMissingNode()) {
+        return euroNode.path("rate_float").asDouble();
+      }
     } catch (Exception e) {
-      //TODO Better exception handling
+      // Better exception handling can be implemented here
       e.printStackTrace();
     }
-    return cryptoPrices;
+
+    // Return null or a default value in case of an error
+    return null;
   }
 }

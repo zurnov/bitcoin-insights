@@ -9,7 +9,21 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - data:/var/lib/postgresql/data
+      - database-data:/var/lib/postgresql/data
+    networks:
+      - bitcoin-insights-network
+
+  database-dev:
+    image: postgres:16.1
+    restart: always
+    environment:
+      POSTGRES_DB: bitcoin_insights_db_dev
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - database-dev-data:/var/lib/postgresql/data
     networks:
       - bitcoin-insights-network
 
@@ -20,7 +34,7 @@ services:
     ports:
       - "8001:8000"
     depends_on:
-      - database
+      - database-dev
     environment:
       SPRING_PROFILES_ACTIVE: dev
       RPC_USER: ${RPC_USER}
@@ -50,8 +64,8 @@ services:
       - bitcoin-insights-network
 
 volumes:
-  data:
-
+  database-data:
+  database-dev-data:
 networks:
   bitcoin-insights-network:
     driver: bridge
