@@ -22,16 +22,7 @@ public class BitcoinPriceService {
   }
 
   public Double getBitcoinPriceInUsd() {
-    Map<String, Map<String, Double>> latestPrices = priceFetcherService.getCachedPrices();
-
-    Double btcPrice = null;
-
-    if (latestPrices.containsKey("bitcoin")) {
-      Map<String, Double> bitcoinPrices = latestPrices.get("bitcoin");
-      btcPrice = bitcoinPrices.get("usd");
-    }
-
-    return btcPrice;
+   return priceFetcherService.getCachedPrice();
   }
 
   @Scheduled(cron = "0 0 * * * ?")
