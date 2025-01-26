@@ -16,19 +16,20 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(
-                        "http://" + rpcAddress + ":4200",
-                        "https://" + rpcAddress + ":4200",
-                        "http://localhost:4200",
-                        "http://localhost:8000",
-                        "https://api.zurnov.com",
-                        "https://dev.zurnov.com",
-                        "https://zurnov.com",
-                        "https://www.zurnov.com",
-                        "https://explore21.com",
-                        "https://www.explore21.com",
-                        "https://dev.explore21.com",
-                        "https://api.explore21.com")
+//                .allowedOrigins(
+//                        "http://" + rpcAddress + ":4200",
+//                        "https://" + rpcAddress + ":4200",
+//                        "http://localhost:4200",
+//                        "http://localhost:8000",
+//                        "https://api.zurnov.com",
+//                        "https://dev.zurnov.com",
+//                        "https://zurnov.com",
+//                        "https://www.zurnov.com",
+//                        "https://explore21.com",
+//                        "https://www.explore21.com",
+//                        "https://dev.explore21.com",
+//                        "https://api.explore21.com")
+                .allowedOrigins("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE")
                 .allowedHeaders("*");
     }
