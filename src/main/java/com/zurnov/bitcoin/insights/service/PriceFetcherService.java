@@ -38,7 +38,7 @@ public class PriceFetcherService {
 
     try {
       JsonNode rootNode = objectMapper.readTree(jsonResponse);
-      JsonNode euroNode = rootNode.path("bpi").path("EUR");
+      JsonNode euroNode = rootNode.path("bpi").path("USD");
       if (!euroNode.isMissingNode()) {
         return euroNode.path("rate_float").asDouble();
       }
