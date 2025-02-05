@@ -28,7 +28,7 @@ services:
       - bitcoin-insights-network
 
   java-api-dev:
-    image: ghcr.io/zurnov/java-app-bitcoin:latest
+    image: ghcr.io/zurnov/java-app-bitcoin:dev
     container_name: java-api-dev
     restart: always
     ports:
@@ -46,7 +46,7 @@ services:
       - bitcoin-insights-network
 
   java-api-prod:
-    image: ghcr.io/zurnov/java-app-bitcoin:latest
+    image: ghcr.io/zurnov/java-app-bitcoin:main
     container_name: java-api-prod
     restart: always
     ports:
