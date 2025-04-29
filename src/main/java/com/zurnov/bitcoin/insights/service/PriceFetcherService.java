@@ -19,7 +19,7 @@ public class PriceFetcherService {
   @Getter
   private Double cachedPrice;
 
-  @Value("${crypto.price.api.url}")
+//  @Value("${crypto.price.api.url}")
   private String cryptoPriceApiUrl;
 
   @PostConstruct
@@ -34,20 +34,20 @@ public class PriceFetcherService {
 
   private Double getCryptoPrice() {
 
-    String jsonResponse = restTemplate.getForObject(cryptoPriceApiUrl, String.class);
+//    String jsonResponse = restTemplate.getForObject(cryptoPriceApiUrl, String.class);
 
-    try {
-      JsonNode rootNode = objectMapper.readTree(jsonResponse);
-      JsonNode euroNode = rootNode.path("bpi").path("USD");
-      if (!euroNode.isMissingNode()) {
-        return euroNode.path("rate_float").asDouble();
-      }
-    } catch (Exception e) {
-      // Better exception handling can be implemented here
-      e.printStackTrace();
-    }
+//    try {
+//      JsonNode rootNode = objectMapper.readTree(jsonResponse);
+//      JsonNode euroNode = rootNode.path("bpi").path("USD");
+//      if (!euroNode.isMissingNode()) {
+//        return euroNode.path("rate_float").asDouble();
+//      }
+//    } catch (Exception e) {
+//      // Better exception handling can be implemented here
+//      e.printStackTrace();
+//    }
 
     // Return null or a default value in case of an error
-    return null;
+    return 0.0;
   }
 }
